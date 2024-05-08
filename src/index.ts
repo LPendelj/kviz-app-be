@@ -12,7 +12,7 @@ const httpServer = createServer()
 // httpServer.use(cors);
 
 
-const socket = new Server(
+const io = new Server(
     httpServer,
     {
         cors: {
@@ -21,11 +21,25 @@ const socket = new Server(
     }
 )
 
-socket.on("connection", (socket) => {
+let playerList: string[] = []
+
+io.on("connection", (socket) => {
     console.log('client connected from:')
     console.log(socket.id)
+    playerList.push(socket.id)
     socket.emit('successful-connection', 'You connected successfully!')
+    io.emit('player-list', playerList)
+
+    socket.on("disconnect", () => {
+        playerList = playerList.filter(
+            (id) => id !== socket.id
+        )
+        io.emit('player-list', playerList)
+        console.log(socket.id + " disconnected")
+    })
 })
+
+
 
 httpServer.listen(3000, ()=>{
     console.log('Running on 3000'); 
