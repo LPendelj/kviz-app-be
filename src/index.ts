@@ -1,6 +1,7 @@
 import express from "express";
 import { Server, Socket } from "socket.io";
 import { createServer } from "http";
+import { chooseQuestion } from "./utils/chooseQuestion";
 
 
 const app = express();
@@ -29,11 +30,15 @@ io.on("connection", (socket) => {
     playerList.push(socket.id)
     socket.emit('successful-connection', 'You connected successfully!')
     io.emit('player-list', playerList)
+    let question = chooseQuestion()
 
     socket.on('gameStarted', 
         ()=>{
-            console.log('GAME STARTED')
-            socket.broadcast.emit('gameStarted')
+            console.log('GAME STARTED');
+            io.emit('gameStarted');
+  
+            console.log(question);
+            io.emit('firstQuestion', question);
         }
     )
 
