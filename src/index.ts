@@ -30,6 +30,13 @@ io.on("connection", (socket) => {
     socket.emit('successful-connection', 'You connected successfully!')
     io.emit('player-list', playerList)
 
+    socket.on('gameStarted', 
+        ()=>{
+            console.log('GAME STARTED')
+            socket.broadcast.emit('gameStarted')
+        }
+    )
+
     socket.on("disconnect", () => {
         playerList = playerList.filter(
             (id) => id !== socket.id
